@@ -1,0 +1,22 @@
+{
+  "id": "neodex.entrepot",
+  "name": "Entrepôt",
+  "version": "1.0.0",
+  "author": "NDesumeur",
+  "description": "Pousse les caisses sur les marques jaunes. On ne peut que pousser, jamais tirer : 12 entrepôts faits main.",
+  "icon": "icon.png",
+  "entry": "index.js",
+  "view": "entrepot",
+  "neobase": ">=4.0.0",
+  "type": "app",
+  "category": "Jeux",
+  "syncMode": "progression",
+  "syncInfo": "Niveaux finis, records de pas.",
+  "mobile": false,
+  "system": false,
+  "dependencies": {},
+  "sdk": "2.1.0",
+  "permissions": [
+    "storage"
+  ]
+}
