@@ -1,7 +1,7 @@
 {
   "id": "neodex.entrepot",
   "name": "Entrepôt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "NDesumeur",
   "description": "Casse-tête de caisses : pousse toutes les caisses sur les marques jaunes, une à la fois, sans jamais pouvoir les tirer. Déplacements aux flèches, à ZQSD ou à la souris, annulation pas à pas illimitée, 12 entrepôts conçus à la main qui s'ouvrent l'un après l'autre, et des entrepôts au hasard toujours solubles. Pas, poussées et record de pas par niveau.",
   "icon": "icon.png",
