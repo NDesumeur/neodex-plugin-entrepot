@@ -1,23 +1,25 @@
-// Entrepôt : Pousse les caisses sur les marques jaunes. On ne peut que pousser, jamais tirer : 12 entrepôts faits main.
+// Entrepôt : Pousse les caisses sur les marques jaunes. On ne peut que pousser, jamais tirer : 40 entrepôts faits main, du plus simple au plus dur.
 // Jeu NeoDex en pixel art dessiné à la main (police bitmap, cadres et boutons en pixels). Il tourne dans le bac à sable de NeoDex.
 const HTML = `<div class="appWrap wide">
   <div class="agHead"><span class="label">Entrepôt</span><span class="hint">Flèches ou ZQSD · Retour : annuler · R : recommencer</span></div>
   <div class="gMain"><div class="gameBox"><canvas id="gc" width="224" height="176"></canvas></div>
     <div class="gSide">
       <div class="sysCard"><b>RECORDS</b><div class="gStats" id="gStats"></div></div>
-      <div class="row"><button class="btn main" id="gNew">NOUVELLE PARTIE</button><button class="btn" id="enUndo">ANNULER</button></div>
+      <div class="row"><button class="btn main" id="gNew">NOUVELLE PARTIE</button><button class="btn" id="enUndo">ANNULER</button><button class="btn" id="enFs">PLEIN ÉCRAN</button></div>
       <div class="row"><select id="enSel" class="f"></select></div>
-      <div class="hint">On pousse une seule caisse à la fois. Une caisse coincée dans un coin ne ressortira plus : Retour pour annuler.</div><div class="hint">À la souris : clique à côté du personnage pour le faire avancer de ce côté.</div>
+      <div class="hint">On pousse une seule caisse à la fois. Une caisse coincée dans un coin ne ressortira plus : Retour pour annuler.</div><div class="hint">À la souris : clique à côté du personnage pour le faire avancer de ce côté.</div><div class="hint">Manette : croix ou stick pour marcher, B annuler, Y recommencer, A ou Start niveau suivant.</div>
     </div></div>
 </div>`;
 const CSS = `.gMain{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
-.gameBox{display:grid;place-items:center;padding:10px;background:#05010b;flex:2;min-width:320px;position:relative}
+.gameBox{display:grid;place-items:center;padding:10px;background:#05010b;flex:2 1 560px;min-width:min(100%,340px);position:relative}
 .gameBox canvas{width:100%;image-rendering:pixelated;cursor:var(--cp,pointer);touch-action:none}
 .gSide{display:flex;flex-direction:column;gap:14px;flex:1;min-width:250px;max-width:420px}
 .gSide .sysCard{display:flex;flex-direction:column}
 .gStats{display:grid;grid-template-columns:1fr auto;gap:4px 14px}
 .gStats b{text-align:right}
-.gameBox canvas{max-width:640px;aspect-ratio:224/176}`;
+.gameBox canvas{width:min(100%,max(300px,calc((100vh - 190px) * 224 / 176)));height:auto;aspect-ratio:224/176}
+.gameBox:fullscreen{padding:0}
+.gameBox:fullscreen canvas{width:min(100vw,calc(100vh * 224 / 176))}`;
 /* ---------- l'habillage pixel art, dessiné à la main : police bitmap (accents compris), cadres, boutons, icônes ----------
    Tout est en pixels pleins, agrandis par 2 sans lissage : aucun dégradé, aucune ombre floue. */
 const PXK = (() => {
@@ -329,21 +331,50 @@ const beep = (f, d = .1, type = 'square', slide = 0, vol = .08) => { try { actx 
 const keyOk = e => view.classList.contains('on') && !/INPUT|SELECT|TEXTAREA/.test(e.target.tagName);
 const showStats = rows => $('gStats').replaceChildren(...rows.flatMap(([a, b]) => [el('span', '', a), el('b', '', String(b))]));
 
-/* ---------- Entrepôt : pousser les caisses sur les marques ; on pousse, on ne tire jamais. 12 niveaux faits main, tous vérifiés par un solveur. ---------- */
-const EN_LEVELS = [
+/* ---------- Entrepôt : pousser les caisses sur les marques ; on pousse, on ne tire jamais. 40 niveaux faits main, rangés par difficulté et tous vérifiés par un solveur. ---------- */
+const EN_LEVELS = [  // du plus simple au plus dur (nombre minimal de poussées, vérifié par un solveur : 2, 3, 4, 4, 4, 4, 4, 5, 5, 5, 7, 8, 18, 18, 18, 18, 19, 19, 19, 20, 20, 20, 20, 21, 22, 22, 23, 23, 24, 25, 25, 27, 27, 28, 28, 29, 31, 32, 34, 43)
+  "  #####\n###   #\n#  $  #\n# #.# #\n# .$  #\n##  @##\n #####",
   "  ####\n###  #\n#@$  #\n### .#\n  ####",
   "######\n#    #\n# $$ #\n#@#..#\n######",
   "#######\n#.  # #\n#.$$  #\n#  @  #\n#######",
-  " #####\n #   ###\n##$#   #\n# @ $  #\n# ..#  #\n########",
-  "########\n#  .   #\n# $#$# #\n#  @   #\n# #$# .#\n#  .   #\n########",
-  "#######\n#  .  #\n# $$$ #\n#.#@#.#\n#     #\n#######",
-  "  #####\n###   #\n#  $  #\n# #.# #\n# .$  #\n##  @##\n #####",
   "########\n#      #\n# $  $ #\n#.#  #.#\n#   @  #\n########",
   " ######\n #    #\n##$## #\n#  .  #\n# $@.##\n#  ###\n####",
-  " #######\n #  .  #\n##$$.$ #\n#  .@  #\n#      #\n########",
   "  ######\n  #    #\n### $$ #\n#  .#. #\n# @ .$ #\n########",
+  "#######\n#  .  #\n# $$$ #\n#.#@#.#\n#     #\n#######",
+  " #######\n #  .  #\n##$$.$ #\n#  .@  #\n#      #\n########",
   "#######\n#.    #\n# $#$ #\n#.$ @.#\n#     #\n#######",
+  "########\n#  .   #\n# $#$# #\n#  @   #\n# #$# .#\n#  .   #\n########",
+  " #####\n #   ###\n##$#   #\n# @ $  #\n# ..#  #\n########",
+  " ######\n#      #\n# $##  #\n# $  @ #\n###    #\n#..  ###\n#####",
+  "##########\n#..  @   #\n# $##  $ #\n#  #   # #\n##########",
+  "  #####\n  # .##\n ##  *+#\n#  $$ #\n#     #\n#   # #\n#######",
+  "#######\n#.  $.#\n# #$# #\n# $   #\n# #@#.#\n#     #\n#######",
+  "########\n#  @##.#\n# $$# .#\n# $    #\n# #   .#\n########",
+  "#######\n#  . .#\n##$   #\n## #  #\n# $   #\n#+$   #\n#######",
+  "#########\n# $   ..#\n#@$$   .#\n# $    .#\n#########",
+  "  ######\n #   ###\n#.$@## #\n#.# $  #\n#      #\n#   ####\n#####",
+  "#########\n#   ##  #\n#    $  #\n###$#   #\n # @.. #\n #######",
+  "########\n# .  $@#\n##  $$ #\n#   # ##\n #. . ##\n #######",
+  "#########\n## #  # #\n# $  $ @#\n# #   $ #\n#.   ## #\n#..  $ .#\n#########",
+  "  #####\n##   ##\n# $  # #\n# # # .#\n#  $   #\n# #   +#\n ##  ###\n #####",
+  " #####\n# #  ####\n#     *.#\n#    #$ #\n#  # #@ #\n#########",
+  "  ####\n ##  #\n###  ###\n#@$$   #\n# $  ..#\n#. #####\n#####",
+  " ########\n #     .#\n #   $###\n#@  # $ #\n# #$  # #\n##     .#\n####. ###\n#######",
+  "######\n# .# #\n#  # .#\n#  $$@#\n#   $ #\n#. # ##\n#######",
+  "#######\n#    .#\n# $#$.#\n#$ +$ #\n# $#$ #\n#. . .#\n#######",
+  "  #######\n  #     #\n##. #$$ #\n#. ##  ##\n#  @  $##\n#.      #\n#########",
+  "########\n#.#  .##\n#  $.$.#\n# @##  #\n# $  $ #\n# #   ##\n #######",
+  "  #######\n # # #  #\n#@$ $   #\n#       #\n#  ######\n#    ..##\n#######",
+  "##########\n#.+.     #\n#    $$$ #\n#####  ###\n  ###  #\n  ######",
+  " #######\n ##   ##\n#  $  ###\n#  $$ ###\n#@$ #. ##\n# # .. .#\n #######",
+  "########\n#.   $ #\n#   $$ #\n#  #$ @#\n#... ###\n#####",
+  "  ######\n  #   .#\n###$   #\n#   $#.#\n#  $ #+#\n# #  ###\n ##  #\n #####",
+  "   #####\n  ##   #\n####$# #\n#     $@#\n# # #   #\n#.*.    #\n#########",
+  "##########\n# @ ##  .#\n# *    $ #\n#  #    ##\n# ##   ..#\n # $  $ #\n #   ## #\n ########",
+  " # ####\n# ##  #\n#    $#\n#  .#@##\n## # $.#\n #     #\n #  # ##\n #####",
+  "#########\n#. . #  #\n## $##  #\n#    $  #\n#   #$ .#\n#*###  @#\n#########",
 ];
+const EN_OLD = [1, 2, 3, 11, 10, 7, 0, 4, 5, 8, 6, 9];  // où sont passés les 12 premiers entrepôts (pour garder les niveaux déjà finis)
 const EN_T = 16;
 const EN_PAL = {k: '#140a04', w: '#c88a4a', W: '#e8b070', d: '#8a5428', D: '#5a3418', y: '#ffd84a', Y: '#fff4b0', g: '#5fdf6a', s: '#ffd0a8', b: '#3f6aff', B: '#2a4aa0', r: '#ff4a5a', h: '#5a3418', e: '#ffffff'};
 const EN_CRATE = ['kkkkkkkkkkkkkk', 'kWWWWWWWWWWWWk', 'kWddddddddddwk', 'kWdWwwwwwwwdwk', 'kWdwWwwwwwddwk', 'kWdwwWwwwdwdwk', 'kWdwwwWwdwwdwk', 'kWdwwwwdWwwdwk', 'kWdwwwdwwWwdwk', 'kWdwwdwwwwWdwk', 'kWdwdwwwwwwWwk', 'kWddddddddddwk', 'kwwwwwwwwwwwDk', 'kkkkkkkkkkkkkk'];
@@ -361,7 +392,8 @@ const EN_TILE = {
   wall: cnv(16, 16, b => { px(b, '#2a1414', 0, 0, 16, 16); for (let r = 0; r < 4; r++) for (let c = -1; c < 3; c++) { const x = c * 8 + (r % 2) * 4, y = r * 4; px(b, '#7a3a34', x + 1, y + 1, 7, 3); px(b, '#9a5048', x + 1, y + 1, 7, 1); px(b, '#5a2a26', x + 1, y + 3, 7, 1); } }),
   goal: cnv(16, 16, b => { for (let k = 3; k < 13; k++) { px(b, '#ffd84a', k, k); px(b, '#ffd84a', 15 - k, k); px(b, '#b08a10', k + 1, k); px(b, '#b08a10', 16 - k, k); } }),
 };
-const ens = gstore('entrepot', {level: 0, top: 0, best: {}}); ens.rand ??= 0;
+const ens = gstore('entrepot', {level: 0, top: 0, best: {}, v: 2}); ens.rand ??= 0;
+if (ens.v !== 2) { const b = {}; for (const [k, v] of Object.entries(ens.best)) if (EN_OLD[k] != null) b[EN_OLD[k]] = v; ens.best = b; ens.top = Math.max(0, ...EN_OLD.filter((_, i) => i <= ens.top)); ens.level = EN_OLD[ens.level] ?? 0; ens.v = 2; }
 function enRandom() {  // un entrepôt au hasard, construit à l'envers : les caisses partent des marques et le magasinier les TIRE, donc on peut toujours les y repousser
   const D = [[1, 0], [-1, 0], [0, 1], [0, -1]], w = 9, h = 8, nb = 2 + (Math.random() < .55);
   for (;;) {
@@ -389,7 +421,7 @@ function enLoad(i = ens.level, src = i < 0 ? enRandom() : EN_LEVELS[i]) {
   const walls = new Set(), goals = new Set(), boxes = []; let p = null;
   rows.forEach((r, y) => [...r].forEach((c, x) => { const k = x + ',' + y; if (c === '#') walls.add(k); if ('.*+'.includes(c)) goals.add(k); if ('$*'.includes(c)) boxes.push([x, y]); if ('@+'.includes(c)) p = [x, y]; }));
   const inside = new Set(), q = [p.join(',')]; while (q.length) { const k = q.pop(); if (inside.has(k) || walls.has(k)) continue; inside.add(k); const [x, y] = k.split(',').map(Number); if (x < 0 || y < 0 || x >= wd || y >= rows.length) continue; q.push((x + 1) + ',' + y, (x - 1) + ',' + y, x + ',' + (y + 1), x + ',' + (y - 1)); }  // le sol, seulement à l'intérieur des murs
-  en = Object.assign(en || {tick: 0, raf: 0}, {mode: 'play', i, src, w: wd, h: rows.length, walls, goals, inside, boxes, p, dir: 'down', flip: false, step: 0, moves: 0, pushes: 0, hist: [], wonAt: 0});
+  en = Object.assign(en || {tick: 0, raf: 0}, {mode: 'play', anim: null, i, src, w: wd, h: rows.length, walls, goals, inside, boxes, p, dir: 'down', flip: false, step: 0, moves: 0, pushes: 0, hist: [], wonAt: 0});
   enInfo();
 }
 const enBox = (x, y) => en.boxes.findIndex(([a, b]) => a === x && b === y);
@@ -398,24 +430,26 @@ function enMove(dx, dy) {
   en.dir = dy > 0 ? 'down' : dy < 0 ? 'up' : 'side'; en.flip = dx < 0;
   const nx = en.p[0] + dx, ny = en.p[1] + dy; if (en.walls.has(nx + ',' + ny)) return;
   const bi = enBox(nx, ny);
-  if (bi >= 0) { const bx = nx + dx, by = ny + dy; if (en.walls.has(bx + ',' + by) || enBox(bx, by) >= 0) return beep(120, .05); en.hist.push({p: en.p, b: en.boxes.map(b => [...b]), m: en.moves, u: en.pushes}); en.boxes[bi] = [bx, by]; en.pushes++; beep(en.goals.has(bx + ',' + by) ? 880 : 220, .06, 'square', 0, .05); }
+  if (bi >= 0) { const bx = nx + dx, by = ny + dy; if (en.walls.has(bx + ',' + by) || enBox(bx, by) >= 0) return beep(120, .05); en.hist.push({p: en.p, b: en.boxes.map(b => [...b]), m: en.moves, u: en.pushes}); en.boxes[bi] = [bx, by]; en.pushes++; beep(150, .11, 'sawtooth', 70, .035); beep(95, .09, 'square', 60, .025); if (en.goals.has(bx + ',' + by)) setTimeout(() => beep(880, .08, 'triangle', 0, .06), 90); }
   else en.hist.push({p: en.p, b: en.boxes.map(b => [...b]), m: en.moves, u: en.pushes});
+  en.anim = {t: performance.now(), dx, dy, bi};
   en.p = [nx, ny]; en.moves++; en.step++;
   if (en.boxes.every(([x, y]) => en.goals.has(x + ',' + y))) {
     en.mode = 'won'; en.wonAt = en.tick;
     if (en.i < 0) ens.rand++; else { const b = ens.best[ens.level]; if (!b || en.moves < b) ens.best[ens.level] = en.moves; if (ens.level >= ens.top) ens.top = Math.min(EN_LEVELS.length - 1, ens.level + 1); } saveGames(); enInfo(); [523, 659, 784, 1047].forEach((f, k) => setTimeout(() => beep(f, .15, 'triangle'), k * 100));
   }
 }
-function enUndo() { const h = en.hist.pop(); if (!h || en.mode !== 'play') return; en.p = h.p; en.boxes = h.b; en.moves = h.m; en.pushes = h.u; beep(330, .04); }
+function enUndo() { const h = en.hist.pop(); if (!h || en.mode !== 'play') return; en.p = h.p; en.boxes = h.b; en.moves = h.m; en.pushes = h.u; en.anim = null; beep(330, .04); }
 function enDraw() {
   px(g, '#140a04', 0, 0, W, H);
   const ox = Math.floor((W - en.w * EN_T) / 2), oy = Math.floor((H - 14 - en.h * EN_T) / 2) + 14;
   for (let y = 0; y < en.h; y++) for (let x = 0; x < en.w; x++) { const k = x + ',' + y, X = ox + x * EN_T, Y = oy + y * EN_T; if (en.walls.has(k)) g.drawImage(EN_TILE.wall, X, Y); else if (en.inside.has(k)) { g.drawImage(EN_TILE.floor, X, Y); if (en.goals.has(k)) g.drawImage(EN_TILE.goal, X, Y); } }
-  for (const [x, y] of en.boxes) { const ok = en.goals.has(x + ',' + y); px(g, 'rgba(0,0,0,.35)', ox + x * EN_T + 2, oy + y * EN_T + 14, 14, 2); g.drawImage(ok ? EN_SPR.crateOk : EN_SPR.crate, ox + x * EN_T + 1, oy + y * EN_T); }
-  const fr = EN_SPR[en.dir][en.step % 2], X = ox + en.p[0] * EN_T + 2, Y = oy + en.p[1] * EN_T + 1;
+  const A = en.anim, k = A ? Math.max(0, 1 - (performance.now() - A.t) / 110) : 0, sx = A ? -A.dx * EN_T * k : 0, sy = A ? -A.dy * EN_T * k : 0;  // le reste du glissement
+  en.boxes.forEach(([x, y], i) => { const ok = en.goals.has(x + ',' + y) && !(A && A.bi === i && k > 0), mx = A && A.bi === i ? sx : 0, my = A && A.bi === i ? sy : 0; px(g, 'rgba(0,0,0,.35)', ox + x * EN_T + 2 + mx, oy + y * EN_T + 14 + my, 14, 2); g.drawImage(ok ? EN_SPR.crateOk : EN_SPR.crate, Math.round(ox + x * EN_T + 1 + mx), Math.round(oy + y * EN_T + my)); });
+  const fr = EN_SPR[en.dir][en.step % 2], X = Math.round(ox + en.p[0] * EN_T + 2 + sx), Y = Math.round(oy + en.p[1] * EN_T + 1 + sy);
   if (en.flip) { g.save(); g.translate(X + 12, Y); g.scale(-1, 1); g.drawImage(fr, 0, 0); g.restore(); } else g.drawImage(fr, X, Y);
   px(g, '#2a1408', 0, 0, W, 13); px(g, '#5a3418', 0, 13, W, 1);
-  pxFont(g, en.i < 0 ? 'AU HASARD' : 'NIVEAU ' + (ens.level + 1) + ' / ' + EN_LEVELS.length, 5, 10, '#ffd84a', 7); pxFont(g, en.moves + ' pas · ' + en.pushes + ' poussées', W - 5, 10, '#e8b070', 6, 'right');
+  pxFont(g, en.i < 0 ? 'AU HASARD' : 'NIVEAU ' + (ens.level + 1) + ' / ' + EN_LEVELS.length, 5, 10, '#ffd84a', 7); pxFont(g, en.moves + ' pas · ' + en.pushes + (en.pushes > 1 ? ' poussées' : ' poussée'), W - 5, 10, '#e8b070', 6, 'right');
   if (en.mode === 'won' && en.tick - en.wonAt > 30) gameText(g, W, [['RANGÉ !', '#ffd84a', 12], [en.moves + ' pas', '#ffffff'], [en.i < 0 ? 'Clic ou Entrée : un autre au hasard' : ens.level < EN_LEVELS.length - 1 ? 'Clic ou Entrée : niveau suivant' : 'Tous les niveaux sont faits !', '#e8b070']], 80);
 }
 document.addEventListener('keydown', e => {
@@ -439,15 +473,37 @@ function enInfo() {
 $('enSel').onchange = () => { enLoad(+$('enSel').value); $('enSel').blur(); };
 $('enUndo').onclick = () => { enUndo(); $('enUndo').blur(); };
 $('gNew').onclick = () => { enLoad(en.i); $('gNew').blur(); };
-{  // vérification : la solution du niveau 1 le termine, un mur arrête, annuler revient en arrière
-  const keep = en, kl = ens.level, kb = {...ens.best}, kt = ens.top; en = null; enLoad(0);
-  enMove(-1, 0); const blocked = en.moves === 0; enMove(1, 0); enUndo(); const undone = en.moves === 0 && en.boxes[0][0] === 2;
-  for (const d of [[1, 0], [1, 0], [0, -1], [1, 0], [0, 1]]) enMove(...d);
-  console.assert(blocked && undone && en.mode === 'won', 'entrepôt', {blocked, undone, mode: en.mode});
-  const rs = Array.from({length: 15}, enRandom), cnt = (r, re) => (r.match(re) || []).length;  // les entrepôts au hasard : autant de caisses que de marques, un seul magasinier
-  console.assert(rs.every(r => cnt(r, /[$*]/g) === cnt(r, /[.*+]/g) && cnt(r, /[@+]/g) === 1 && cnt(r, /\$/g) >= 2), 'entrepôt au hasard', rs[0]);
-  en = keep; ens.level = kl; ens.best = kb; ens.top = kt;
+$('enFs').onclick = () => { $('enFs').blur(); try { if (document.fullscreenElement) document.exitFullscreen(); else cv.parentElement.requestFullscreen?.().catch(() => {}); } catch {} };
+{  // la manette : croix ou stick (maintenu : le pas se répète), B annuler (se répète aussi), Y recommencer, A ou Start niveau suivant
+  let prev = [], hold = 0, last = '';
+  const loop = () => {
+    requestAnimationFrame(loop);
+    const p = [...(navigator.getGamepads?.() || [])].find(Boolean);
+    if (!p || !en || !view.classList.contains('on')) { prev = []; hold = 0; last = ''; return; }
+    const now = p.buttons.map(b => b.pressed), was = prev, ax = p.axes[0] || 0, ay = p.axes[1] || 0; prev = now;
+    const dir = now[12] || ay < -.5 ? 'u' : now[13] || ay > .5 ? 'd' : now[14] || ax < -.5 ? 'l' : now[15] || ax > .5 ? 'r' : now[1] ? 'b' : '';
+    if (dir !== last) { last = dir; hold = 0; } else hold++;
+    if (dir && (hold === 0 || hold >= 16 && (hold - 16) % 8 === 0)) { if (dir === 'b') enUndo(); else enMove(...{u: [0, -1], d: [0, 1], l: [-1, 0], r: [1, 0]}[dir]); }
+    if (now[3] && !was[3]) enLoad(en.i, en.src);
+    if ((now[0] && !was[0] || now[9] && !was[9]) && en.mode === 'won' && en.tick - en.wonAt > 30) enNext();
+  };
+  requestAnimationFrame(loop);
 }
+function enCheck() {  // vérification : une poussée finit un petit entrepôt, un mur arrête, annuler revient ; les 40 niveaux sont bien formés et tiennent dans l'écran
+  const keep = en, kl = ens.level, kb = {...ens.best}, kt = ens.top, kr = ens.rand, bad = [], vol = actx; actx = {currentTime: 0, createOscillator: () => { throw 0; }};
+  en = null; enLoad(-1, '######\n#@ $.#\n######');
+  enMove(-1, 0); if (en.moves !== 0) bad.push('mur'); enMove(1, 0); enUndo(); if (en.moves !== 0 || en.p[0] !== 1) bad.push('annuler');
+  enMove(1, 0); enMove(1, 0); if (en.mode !== 'won' || en.pushes !== 1 || !en.anim || en.anim.bi !== 0) bad.push('poussée');
+  const cnt = (r, re) => (r.match(re) || []).length;
+  EN_LEVELS.forEach((l, i) => { const rows = l.split('\n'); if (cnt(l, /[$*]/g) !== cnt(l, /[.*+]/g) || cnt(l, /[@+]/g) !== 1 || rows.length > 10 || Math.max(...rows.map(r => r.length)) > 14) bad.push('niveau ' + (i + 1)); });
+  if (new Set(EN_LEVELS).size !== EN_LEVELS.length || EN_LEVELS.length !== 40 || EN_OLD.length !== 12 || new Set(EN_OLD).size !== 12) bad.push('liste');
+  const rs = Array.from({length: 15}, enRandom);  // les entrepôts au hasard : autant de caisses que de marques, un seul magasinier
+  if (!rs.every(r => cnt(r, /[$*]/g) === cnt(r, /[.*+]/g) && cnt(r, /[@+]/g) === 1 && cnt(r, /\$/g) >= 2)) bad.push('hasard');
+  actx = vol; en = keep; ens.level = kl; ens.best = kb; ens.top = kt; ens.rand = kr;
+  return bad.length ? bad.join(', ') : 'ok';
+}
+{ const c = enCheck(); console.assert(c === 'ok', 'entrepôt', c); }
+cv.__en = {st: () => en, ens: () => ens, check: enCheck, load: (i, src) => enLoad(i, src), N: EN_LEVELS.length};
 ctx.onOpen(() => { if (!en) enLoad(); gameLoop(en, 'entrepot', () => {}, enDraw); enInfo(); });
 
 }

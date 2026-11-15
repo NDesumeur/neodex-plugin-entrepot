@@ -10,23 +10,27 @@ Un casse-tête de caisses à pousser : guide le magasinier pour ranger toutes le
 - **À la souris** : clique à côté du personnage pour le faire avancer de ce côté.
 - **Retour** ou le bouton **Annuler** : revenir en arrière d'un pas, autant de fois que tu veux.
 - **R** : recommencer le niveau.
+- **Manette** : la croix ou le stick pour marcher (maintenu, le pas se répète), **B** pour annuler, **Y** pour recommencer, **A** ou **Start** pour passer au niveau suivant.
+- **Plein écran** : le bouton du même nom ; Échap pour en sortir.
 
 ## Règles
 
 - On ne pousse qu'**une caisse à la fois** : impossible de pousser deux caisses alignées ou une caisse contre un mur.
 - On ne peut **jamais tirer** une caisse. Une caisse poussée dans un coin ne ressortira plus : annule pour la sauver.
-- Le niveau est réussi quand toutes les caisses sont sur une marque. Le compteur en haut montre tes **pas** et tes **poussées**.
+- Le niveau est réussi quand toutes les caisses sont sur une marque. Le compteur en haut montre tes **pas** et tes **poussées**. Chaque caisse glisse jusqu'à sa nouvelle case avec un raclement de bois, et tinte quand elle arrive sur une marque.
 
 ## Les niveaux
 
-- **12 entrepôts** conçus à la main, de plus en plus rusés. Chaque niveau réussi ouvre le suivant ; choisis-le dans la liste, où un ✓ marque ceux que tu as finis.
+- **40 entrepôts** conçus à la main, rangés du plus simple au plus dur : le classement suit le nombre minimal de poussées, calculé par un solveur qui vérifie aussi que chaque niveau a une solution. Chaque niveau réussi ouvre le suivant ; choisis-le dans la liste, où un ✓ marque ceux que tu as finis.
 - **Au hasard** : un entrepôt généré à la demande, toujours soluble. Il est construit à l'envers : les caisses partent des marques et le magasinier les tire, donc on peut toujours les y repousser.
 
 ## Statistiques
 
-Le panneau Records montre les **niveaux finis** sur 12, le nombre d'**entrepôts au hasard** réussis et ton **record de pas** sur le niveau en cours.
+Le panneau Records montre les **niveaux finis** sur 40, le nombre d'**entrepôts au hasard** réussis et ton **record de pas** sur le niveau en cours.
 
 ## Données et synchronisation
+
+Les niveaux déjà finis dans la version précédente restent cochés : ils ont simplement pris leur place dans le nouveau classement.
 
 Tes niveaux finis et tes records de pas sont enregistrés par NeoDex, sauvegardés et synchronisés entre tes PC si la synchro est activée.
 
