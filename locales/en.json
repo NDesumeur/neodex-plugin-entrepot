@@ -55,7 +55,6 @@
  "NOUVELLE PARTIE": "NEW GAME",
  "Niveau": "Level",
  "Niveaux finis": "Finished levels",
- "Niveaux finis, records de pas.": "Finished levels, step records.",
  "Nt": "Nt",
  "Oa": "Oa",
  "Oc": "Oc",
@@ -75,5 +74,6 @@
  "pas ·": "not ·",
  "poussées": "thrusts",
  "À la souris : clique à côté du personnage pour le faire avancer de ce côté.": "With the mouse: click next to the character to move him to that side.",
- "poussée": "push"
+ "poussée": "push",
+ "Rien n'est synchronisé : tes records restent sur cet appareil.": "Nothing is synced: your records stay on this device."
 }
