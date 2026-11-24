@@ -25,6 +25,11 @@ module.exports = async ({ pj, sleep }) => {
   await btn(15, 700); if (await C('return en.moves;') < 3) throw new Error('la croix maintenue devait répéter le pas');
   await btn(3); if (await C('return en.moves;') !== 0) throw new Error('Y devait recommencer');
   await pj(`navigator.getGamepads = () => [], 0`);
+  // la collection Microban : choisie dans la liste, ses niveaux à elle, puis retour aux entrepôts NeoDex
+  await pj(`(() => { const s = document.getElementById('enSet'); s.value = 'mb'; s.dispatchEvent(new Event('change')); return 0; })()`); await sleep(200); await shot('4-microban');
+  const mb = await pj(`(() => { const T = document.getElementById('gc').__en; return [T.ens().set, document.getElementById('enSel').options.length - 1, T.MB, document.getElementById('enCredit').hidden].join('|'); })()`);
+  if (!/^mb\|(\d+)\|\1\|false$/.test(mb)) throw new Error('collection Microban : ' + mb);
+  await C('T.load(T.MB - 1); return 0;'); await sleep(150); await shot('5-microban-dernier');
   await C(`Object.assign(T.ens(), JSON.parse(${JSON.stringify(keep)})); T.load(T.ens().level); return 0;`);
   const errs = await pj(`window.__e.join(' | ')`); if (errs) throw new Error('erreur : ' + errs);
   // plein écran, et la zone de jeu qui tient dans la fenêtre

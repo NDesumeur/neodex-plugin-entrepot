@@ -4,6 +4,10 @@ A box-pushing puzzle: guide the warehouse keeper to put every crate on the yello
 
 *Version française : [README.md](README.md)*
 
+## Microban (new in 1.2.0)
+
+A second collection: 128 Microban levels by David W. Skinner, with their own progress.
+
 ## Controls
 
 - **Arrows** or **ZQSD** (WASD on a QWERTY keyboard): move the keeper.

@@ -4,6 +4,10 @@ Un casse-tête de caisses à pousser : guide le magasinier pour ranger toutes le
 
 *English version: [README.en.md](README.en.md)*
 
+## Microban (nouveau en 1.2.0)
+
+Une deuxième collection : 128 niveaux Microban de David W. Skinner, avec leur propre progression.
+
 ## Commandes
 
 - **Flèches** ou **ZQSD** : déplacer le magasinier.

@@ -1,16 +1,19 @@
 {
   "id": "neodex.entrepot",
   "name": "Entrepôt",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "author": "NDesumeur",
-  "description": "Casse-tête de caisses : pousse toutes les caisses sur les marques jaunes, une à la fois, sans jamais pouvoir les tirer. 40 entrepôts conçus à la main, rangés du plus simple au plus dur, qui s'ouvrent l'un après l'autre, et des entrepôts au hasard toujours solubles. Caisses qui glissent avec un bruit de bois, flèches, ZQSD, souris ou manette, annulation pas à pas illimitée, plein écran. Pas, poussées et record de pas par niveau.",
+  "description": "Casse-tête de caisses : pousse toutes les caisses sur les marques jaunes, une à la fois, sans jamais pouvoir les tirer. 40 entrepôts conçus à la main, rangés du plus simple au plus dur, qui s'ouvrent l'un après l'autre, et des entrepôts au hasard toujours solubles. Caisses qui glissent avec un bruit de bois, flèches, ZQSD, souris ou manette, annulation pas à pas illimitée, plein écran. Pas, poussées et record de pas par niveau. Deuxième collection : 128 niveaux Microban de David W. Skinner.",
   "icon": "icon.png",
   "entry": "index.js",
   "view": "entrepot",
   "neobase": ">=4.0.0",
   "type": "app",
   "category": "Jeux",
-  "compatibility": ["windows", "linux"],
+  "compatibility": [
+    "windows",
+    "linux"
+  ],
   "syncMode": "aucune",
   "syncInfo": "Rien n'est synchronisé : tes records restent sur cet appareil.",
   "mobile": false,
