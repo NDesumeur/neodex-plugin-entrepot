@@ -301,6 +301,9 @@ export default async function (ctx) {
   const saveGames = () => { clearTimeout(gamesTimer); gamesTimer = setTimeout(() => { gamesTimer = null; folder.write('games', games).catch(() => {}); }, 500); };
   const best = (k, v) => { const b = games.best[k]; if (b == null || v > b) { games.best[k] = v; saveGames(); return true; } return false; };
   const gstore = (k, init) => (games[k] ??= init);
+  // les trophées de NeoDex (3.4.8 et plus) : succès et records déclarés dans plugin.json ; sur un NeoDex plus ancien, rien ne se passe
+  const trophy = id => { ctx.games?.unlock(id).catch(() => {}); };
+  const trophyRecord = (id, v) => { if (v != null && Number.isFinite(+v)) ctx.games?.record(id, +v).catch(() => {}); };
 function gameLoop(st, appKey, update, draw) {
   cancelAnimationFrame(st.raf);
   const STEP = 1000 / 60; let acc = 0, last = performance.now();
@@ -474,6 +477,7 @@ cv.onpointerdown = e => {  // à la souris : un clic à côté du personnage le 
   if (Math.abs(dx) > Math.abs(dy)) enMove(Math.sign(dx), 0); else enMove(0, Math.sign(dy));
 };
 function enInfo() {
+  setTimeout(enTrophies);
   const S = enS();
   showStats([['Niveaux finis', Object.keys(S.best).length + ' / ' + enL().length], ['Au hasard', ens.rand], ['Record sur ce niveau', en.i >= 0 && S.best[S.level] ? S.best[S.level] + ' pas' : '-']]);
   const rnd = el('option', '', 'Au hasard (nouveau à chaque fois)'); rnd.value = -1;
@@ -520,6 +524,13 @@ function enCheck() {  // vérification : une poussée finit un petit entrepôt, 
 }
 { const c = enCheck(); console.assert(c === 'ok', 'entrepôt', c); }
 cv.__en = {st: () => en, ens: () => ens, check: enCheck, load: (i, src) => enLoad(i, src), N: EN_LEVELS.length, MB: EN_MB.length};
+// les trophées, tirés des statistiques et des records gardés (aussi à l'ouverture : ce qui a été fait avant compte)
+function enTrophies() {
+  const n = Object.keys(ens.best || {}).length, sig = [n, ens.rand].join(); if (sig === enTrophies.sig) return; enTrophies.sig = sig;
+  trophyRecord('finis', n || null); trophyRecord('hasard', ens.rand || null);
+  if (n >= 1) trophy('premier'); if (n >= 10) trophy('dix'); if (n >= 20) trophy('vingt'); if (n >= EN_LEVELS.length) trophy('tous');
+  if (ens.rand >= 1) trophy('hasard'); if (ens.rand >= 10) trophy('hasard10');
+}
 ctx.onOpen(() => { if (!en) enLoad(); gameLoop(en, 'entrepot', () => {}, enDraw); enInfo(); });
 
 }

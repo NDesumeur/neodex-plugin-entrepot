@@ -1,7 +1,7 @@
 {
   "id": "neodex.entrepot",
   "name": "Entrepôt",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": "NDesumeur",
   "description": "Casse-tête de caisses : pousse toutes les caisses sur les marques jaunes, une à la fois, sans jamais pouvoir les tirer. 40 entrepôts conçus à la main, rangés du plus simple au plus dur, qui s'ouvrent l'un après l'autre, et des entrepôts au hasard toujours solubles. Caisses qui glissent avec un bruit de bois, flèches, ZQSD, souris ou manette, annulation pas à pas illimitée, plein écran. Pas, poussées et record de pas par niveau. Deuxième collection : 128 niveaux Microban de David W. Skinner.",
   "icon": "icon.png",
@@ -22,5 +22,52 @@
   "sdk": "2.1.0",
   "permissions": [
     "storage"
+  ],
+  "succes": [
+    {
+      "id": "premier",
+      "nom": "Bien rangé",
+      "texte": "Finir un premier entrepôt"
+    },
+    {
+      "id": "dix",
+      "nom": "Magasinier",
+      "texte": "Finir 10 entrepôts"
+    },
+    {
+      "id": "vingt",
+      "nom": "Chef d'entrepôt",
+      "texte": "Finir 20 entrepôts"
+    },
+    {
+      "id": "tous",
+      "nom": "Tout est en place",
+      "texte": "Finir les 40 entrepôts",
+      "cache": true
+    },
+    {
+      "id": "hasard",
+      "nom": "Livraison surprise",
+      "texte": "Finir un entrepôt au hasard"
+    },
+    {
+      "id": "hasard10",
+      "nom": "Toujours prêt",
+      "texte": "Finir 10 entrepôts au hasard"
+    }
+  ],
+  "records": [
+    {
+      "id": "finis",
+      "nom": "Entrepôts finis",
+      "sens": "haut",
+      "format": "nombre"
+    },
+    {
+      "id": "hasard",
+      "nom": "Entrepôts au hasard",
+      "sens": "haut",
+      "format": "nombre"
+    }
   ]
 }
