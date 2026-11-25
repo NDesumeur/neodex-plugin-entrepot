@@ -1,9 +1,9 @@
 {
   "pluginId": "neodex.entrepot",
   "repo": "NDesumeur/neodex-plugin-entrepot",
-  "version": "1.2.0",
-  "sha256": "6aed8f9ab7eab74b26856aa4811e2fe0fee0fe98dbcd02614ae11936b519b93d",
-  "approvedAt": "2026-11-24T15:56:18.023Z",
+  "version": "1.3.0",
+  "sha256": "9a67fdad4036f89851d732a3ffd03114181bbdb61347b774a059c42e362d8e8d",
+  "approvedAt": "2026-11-25T17:16:42.026Z",
   "neobase": ">=4.0.0",
-  "signature": "+kIZqoE1KRqmlacMgLKRXH+++rbzOvK4qce2gQFHo6/6KZeDJ9q8Re5PxKK4p+/PlGMJ3mrYxkPDJPokw2iRDQ=="
+  "signature": "yiJXEOYRQD8wed8Tqk8S7FbGGYdb8Pyxkk8jmJAzrcVZgtWN/RIRXMZ6fZz3HY4OMFwqgKH/bA8D7vytziMmBA=="
 }
